@@ -1,94 +1,95 @@
 package com.controller;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.model.CalculatorMinMaxRequest;
-import com.model.CalculatorMinMaxResponse;
-import com.model.CalculatorResponse;
+import com.service.RequestResponseLogService;
 
 @RestController
 @RequestMapping("/calculatorapi/v1")
 public class CalculatorController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CalculatorController.class);
 
-    // Addition
+    private final RequestResponseLogService logService;
+
+    public CalculatorController(RequestResponseLogService logService) {
+        this.logService = logService;
+    }
+
     @GetMapping("/addition")
-    public CalculatorResponse addition(@RequestParam double number1, @RequestParam double number2) {
-        double result = number1 + number2;
-        return new CalculatorResponse(result, number1 + " + " + number2 + " = " + result);
+    public double addition(@RequestParam double number1, @RequestParam double number2) {
+        LOGGER.info("Received request for addition with numbers: {} and {}", number1, number2);
+        double result = logService.addition(number1, number2);
+        LOGGER.info("Sending response: {}", result);
+        return result;
     }
 
-    // Subtraction
     @GetMapping("/subtraction")
-    public CalculatorResponse subtraction(@RequestParam double number1, @RequestParam double number2) {
-        double result = number1 - number2;
-        return new CalculatorResponse(result, number1 + " - " + number2 + " = " + result);
+    public double subtraction(@RequestParam double number1, @RequestParam double number2) {
+        LOGGER.info("Received request for subtraction with numbers: {} and {}", number1, number2);
+        double result = logService.subtraction(number1, number2);
+        LOGGER.info("Sending response: {}", result);
+        return result;
     }
 
-    // Multiplication
     @GetMapping("/multiplication")
-    public CalculatorResponse multiplication(@RequestParam double number1, @RequestParam double number2) {
-        double result = number1 * number2;
-        return new CalculatorResponse(result, number1 + " * " + number2 + " = " + result);
+    public double multiplication(@RequestParam double number1, @RequestParam double number2) {
+        LOGGER.info("Received request for multiplication with numbers: {} and {}", number1, number2);
+        double result = logService.multiplication(number1, number2);
+        LOGGER.info("Sending response: {}", result);
+        return result;
     }
 
-    // Division
     @GetMapping("/division")
-    public CalculatorResponse division(@RequestParam double number1, @RequestParam double number2) {
-        if (number2 == 0) {
-            throw new IllegalArgumentException("Division by zero is not allowed.");
-        }
-        double result = number1 / number2;
-        return new CalculatorResponse(result, number1 + " / " + number2 + " = " + result);
-    }
-
-    // Square
-    @GetMapping("/square/{number}")
-    public CalculatorResponse square(@PathVariable double number) {
-        double result = number * number;
-        return new CalculatorResponse(result, "square of " + number + " = " + result);
-    }
-
-    // Square Root
-    @GetMapping("/squareroot/{number}")
-    public CalculatorResponse squareRoot(@PathVariable double number) {
-        if (number < 0) {
-            throw new IllegalArgumentException("Square root is not defined for negative numbers.");
-        }
-        double result = Math.sqrt(number);
-        return new CalculatorResponse(result, "square root of " + number + " = " + result);
-    }
-
-    // Factorial
-    @GetMapping("/factorial/{number}")
-    public CalculatorResponse factorial(@PathVariable int number) {
-        if (number < 0) {
-            throw new IllegalArgumentException("Factorial is not defined for negative numbers.");
-        }
-        long result = calculateFactorial(number);
-        return new CalculatorResponse(result, number + "! = " + result);
-    }
-
-    private long calculateFactorial(int n) {
-        if (n == 0) {
-            return 1;
-        }
-        return n * calculateFactorial(n - 1);
+    public double division(@RequestParam double number1, @RequestParam double number2) {
+        LOGGER.info("Received request for division with numbers: {} and {}", number1, number2);
+        double result = logService.division(number1, number2);
+        LOGGER.info("Sending response: {}", result);
+        return result;
     }
     
-    // Min-Max (POST)
-    @PostMapping("/min-max")
-    public CalculatorMinMaxResponse minMax(@RequestBody CalculatorMinMaxRequest request) {
-        List<Double> numbers = request.getNumbers();
-        if (numbers.isEmpty()) {
-            throw new IllegalArgumentException("Please provide a list of numbers in the request body.");
-        }
+    @GetMapping("/square/{number}")
+    public double square(@PathVariable double number) {
+        LOGGER.info("Received request for square of number: {}", number);
+        double result = logService.square(number); // Invoking the service method
+        LOGGER.info("Sending response: {}", result);
 
-        double min = Collections.min(numbers);
-        double max = Collections.max(numbers);
-
-        return new CalculatorMinMaxResponse(min, max);
+        return result;
     }
+
+    @GetMapping("/squareroot/{number}")
+    public double squareRoot(@PathVariable double number) {
+        LOGGER.info("Received request for square root of number: {}", number);
+        double result = logService.squareRoot(number);
+        LOGGER.info("Sending response: {}", result);
+        return result;
+    }
+
+    @GetMapping("/factorial/{number}")
+    public long factorial(@PathVariable int number) {
+        LOGGER.info("Received request for factorial of number: {}", number);
+        long result = logService.factorial(number);
+        LOGGER.info("Sending response: {}", result);
+        return result;
+    }
+    
+    @PostMapping("/min-max")
+    public List<Double> minMax(@RequestBody CalculatorMinMaxRequest request) {
+        LOGGER.info("Received request for min-max calculation with numbers: {}", request.getNumbers());
+        List<Double> result = logService.minMax(request);
+        LOGGER.info("Sending response: {}", result);
+        return result;
+    }
+
 }
+
