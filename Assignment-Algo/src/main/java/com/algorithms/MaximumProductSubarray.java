@@ -1,0 +1,37 @@
+package com.algorithms;
+//30-Maximum Product Subarray
+
+public class MaximumProductSubarray {
+
+    public static int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int maxProduct = nums[0];
+        int minProduct = nums[0];
+        int result = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+            int num = nums[i];
+
+            if (num < 0) {
+                int temp = maxProduct;
+                maxProduct = minProduct;
+                minProduct = temp;
+            }
+
+            maxProduct = Math.max(num, maxProduct * num);
+            minProduct = Math.min(num, minProduct * num);
+
+            result = Math.max(result, maxProduct);
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {2, 3, -2, 4, -1};
+        System.out.println("Maximum Product Subarray: " + maxProduct(nums));
+    }
+}
